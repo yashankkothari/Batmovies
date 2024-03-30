@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login to Batmovies</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('movie.jpg') center center fixed;
+            background-size: cover;
+            margin: 0;
+        }
+
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.9); /* Semi-transparent black background */
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar img.logo {
+            height: 40px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        #login-container {
+            background-color: rgba(2, 0, 0, 0.9); /* Semi-transparent white background */
+            width: 300px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 50px auto; /* Center the login container */
+        }
+
+        h1 {
+            color: rgb(236, 168, 42);
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 8px;
+            color: rgb(236, 168, 42);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .footer {
+            margin-top: 20px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <img class="logo" src="images/batmovies.png" alt="Bat Logo">
+        <div class="menu">
+            <a href="Home.html">Home</a>
+            <a href="#">Movies</a>
+            <a href="#">TV Shows</a>
+        </div>
+        <div class="login">
+            <a href="#">Sign up</a>
+        </div>
+    </div>
+
+    <div id="login-container">
+        <h1>Login to Batmovies</h1>
+        <form action="login_handler.php" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <p class="footer">Don't have an account? <a href="#" id="signupLink">Sign up here</a>.</p>
+    </div>
+
+    <script>
+        document.getElementById('signupLink').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default action of the link
+            window.location.href = 'SignUp.html'; // Redirect to SignUp.html
+        });
+
+        document.querySelector('.navbar a[href="Home.html"]').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default action of the link
+            window.location.href = 'Home.html'; // Redirect to Home.html
+        });
+    </script>
+
+</body>
+</html>

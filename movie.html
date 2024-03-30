@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Details</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="./images/batmovies.png">
+    <style>
+        .movie-details {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .poster img {
+            max-width: 300px;
+            height: auto;
+        }
+        #info {
+            color: white;
+            margin-top: 20px;
+            text-align: left;
+        }
+        #info h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        #info p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        #addToWatchlist {
+            margin-top: 20px;
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        #addToWatchlist:hover {
+            background-color: #0056b3;
+        }
+        /* Adjusted logo size */
+        .navbar .logo {
+            width: auto;
+            height: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="prime">
+        <nav class="navbar">
+            <!-- Wrapped the logo in an anchor tag -->
+            <a href="Home.html"><img class="logo" src="./images/batmovies.png" alt="Batmovies Logo"></a>
+            <div class="menu">
+                <img class="menu_icon" src="./images/menu.svg">Menu
+            </div>
+            <div class="search">
+                <input type="text" placeholder="Search Batmovies">
+                <button type="submit"><img src="./images/search.svg"></button>
+            </div>
+            <div class="sign">Sign In</div>
+            <div class="sign"><a href="watchlist.html" id="watchlistLink">Your Watchlist</a></div>
+        </nav>
+
+        <div class="movie-details">
+            <div class="poster" id="poster"></div>
+            <div class="info" id="info"></div>
+            <button id="addToWatchlist">Add to Watchlist</button>
+        </div>
+
+        <footer>
+            <!-- Footer content -->
+        </footer>
+    </div>
+
+    <script>
+        let movie; // Define movie variable outside of fetch call
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const movieId = urlParams.get('id');
+            const apiKey = '77555ae36bb8bc2ae287fceee7f78c1c'; // Replace with your TMDB API key
+
+            fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&language=en-US`)
+                .then(response => response.json())
+                .then(data => {
+                    movie = data; // Assign data to movie variable
+                    const poster = document.getElementById('poster');
+                    const info = document.getElementById('info');
+                    
+                    poster.innerHTML = `<img src="https://image.tmdb.org/t/p/w500/${data.poster_path}" alt="${data.title}">`;
+                    info.innerHTML = `
+                        <h2>${data.title}</h2>
+                        <p>Release Date: ${data.release_date}</p>
+                        <p>${data.overview}</p>
+                    `;
+                })
+                .catch(err => console.error(err));
+
+            document.getElementById('addToWatchlist').addEventListener('click', () => {
+                if (movie) {
+                    // Add logic to add movie to watchlist
+                    // For demonstration, let's store the movie ID in localStorage
+                    const watchlist = JSON.parse(localStorage.getItem('watchlist')) || [];
+                    watchlist.push(movieId);
+                    localStorage.setItem('watchlist', JSON.stringify(watchlist));
+                    // Redirect to watchlist page
+                    window.location.href = 'watchlist.html';
+                }
+            });
+
+            document.querySelector('.navbar .sign').addEventListener('click', function() {
+                window.location.href = 'login.html';
+            });
+        });
+    </script>
+</body>
+</html>

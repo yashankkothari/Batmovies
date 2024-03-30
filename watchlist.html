@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watchlist - Batmovies</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="./images/batmovies.png">
+    <style>
+        /* Your CSS styles here */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <!-- Header content, if any -->
+        </header>
+
+        <nav class="navbar">
+            <a href="home.html"><img class="logo" src="./images/batmovies.png"></a>
+            <div class="menu">
+                <img class="menu_icon" src="./images/menu.svg">Menu
+            </div>
+            <div class="search">
+                <input id="searchInput" type="text" placeholder="Search Batmovies">
+                <button id="searchButton" type="submit"><img src="./images/search.svg"></button>
+            </div>
+            <div class="sign">Sign In</div>
+            <div class="sign"><a href="watchlist.html">Your Watchlist</a></div>
+        </nav>
+
+        <div class="watchlist">
+            <h1>Watchlist</h1>
+            <div id="watchlistContainer">
+                <!-- Watchlist movies will be displayed here -->
+            </div>
+        </div>
+
+        <footer>
+            <!-- Footer content -->
+        </footer>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            // Retrieve watchlist from localStorage if available
+            let watchlist = JSON.parse(localStorage.getItem('watchlist')) || [];
+
+            // Display watchlist movies
+            const watchlistContainer = document.getElementById('watchlistContainer');
+            watchlist.forEach(movie => {
+                const movieElement = document.createElement('div');
+                movieElement.classList.add('movie');
+                movieElement.innerHTML = `
+                    <a href="movie.html?id=${movie.id}">
+                        <img src="${movie.poster}" alt="${movie.title}">
+                        <p>${movie.title}</p>
+                    </a>
+                `;
+                watchlistContainer.appendChild(movieElement);
+            });
+
+            // Event listener for clicking the search button
+            document.getElementById('searchButton').addEventListener('click', function(event) {
+                event.preventDefault();
+                const query = document.getElementById('searchInput').value.trim();
+                if (query) {
+                    window.location.href = `search_results.html?query=${encodeURIComponent(query)}`;
+                }
+            });
+
+            // Event listener for pressing enter in the search input
+            document.getElementById('searchInput').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    const query = document.getElementById('searchInput').value.trim();
+                    if (query) {
+                        window.location.href = `search_results.html?query=${encodeURIComponent(query)}`;
+                    }
+                }
+            });
+
+            document.querySelector('.navbar .sign').addEventListener('click', function() {
+                window.location.href = 'login.html';
+            });
+        });
+    </script>
+</body>
+</html>
