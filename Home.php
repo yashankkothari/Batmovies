@@ -76,7 +76,7 @@
         <nav class="navbar">
         <a href="Home.php"><img class="logo" src="./images/batmovies.png"></a>
             <div class="search">
-                <input id="searchInput" type="text" placeholder="Search Batmovies">
+                <input id="searchInput" type="text" placeholder="Search Batmovies For Movies, TV Shows, Cast">
                 <button id="searchButton" type="submit"><img src="./images/search.svg"></button>
             </div>
             <?php
@@ -262,7 +262,7 @@
                     data.results.forEach(show => {
   const showElement = `
     <div class="movie-item">
-      <a href="tv-show.html?id=${show.id}">
+      <a href="tv-show.php?id=${show.id}">
         <img src="https://image.tmdb.org/t/p/w500/${show.poster_path}" alt="${show.name}">
         <div class="details">
           ${show.genres ? show.genres.map(genre => `<span>${genre.name}</span>`).join('') : ''}

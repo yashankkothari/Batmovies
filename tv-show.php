@@ -7,11 +7,11 @@ session_start();
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Details</title>
+    <title>TV Show Details</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="./images/batmovies.png">
     <style>
-        .movie-details {
+        .tv-show-details {
             text-align: center;
             margin-top: 50px;
             display: flex;
@@ -57,36 +57,8 @@ session_start();
         #cast ul li {
             margin: 0 10px;
             text-align: center; /* Center-align each cast member */
-            cursor: pointer;
         }
         #cast ul li img {
-            max-width: 100px;
-            height: auto;
-            border-radius: 5px;
-        }
-        #crew {
-            color: white;
-            margin-top: 20px;
-            text-align: center;
-            flex-basis: 100%;
-        }
-        #crew h3 {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-        #crew ul {
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            list-style: none;
-            flex-wrap: wrap; /* Ensure the crew members wrap to the next line */
-        }
-        #crew ul li {
-            margin: 0 10px;
-            text-align: center; /* Center-align each crew member */
-            cursor: pointer;
-        }
-        #crew ul li img {
             max-width: 100px;
             height: auto;
             border-radius: 5px;
@@ -192,12 +164,11 @@ session_start();
             <div class="sign"><a href="watchlist.php">Your Watchlist</a></div>
         </nav>
 
-        <div class="movie-details">
+        <div class="tv-show-details">
             <div class="poster" id="poster"></div>
             <div class="info" id="info"></div>
             <div class="trailer" id="trailer"></div>
             <div id="cast"></div>
-            <div id="crew"></div> <!-- Added crew section -->
             <div id="reviews"></div>
             <div class="where-to-watch" id="whereToWatch"></div>
             <div class="rating" id="rating">
@@ -207,7 +178,7 @@ session_start();
                 <input type="radio" id="star2" name="rating" value="2"><label for="star2"></label>
                 <input type="radio" id="star1" name="rating" value="1"><label for="star1"></label>
             </div>
-            <button id="addToWatchlist" href="add_to_watchlist.php">Add to Watchlist</button>
+            <button id="addToWatchlist">Add to Watchlist</button>
         </div>
 
         <footer>
@@ -216,54 +187,44 @@ session_start();
     </div>
 
     <script>
-        let movie;
+        let tvShow;
 
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
-            const movieId = urlParams.get('id');
+            const tvShowId = urlParams.get('id');
             const apiKey = '77555ae36bb8bc2ae287fceee7f78c1c'; 
 
-            fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&language=en-US`)
+            fetch(`https://api.themoviedb.org/3/tv/${tvShowId}?api_key=${apiKey}&language=en-US`)
                 .then(response => response.json())
                 .then(data => {
-                    movie = data;
+                    tvShow = data;
                     const poster = document.getElementById('poster');
                     const info = document.getElementById('info');
                     const castContainer = document.getElementById('cast');
-                    const crewContainer = document.getElementById('crew'); // Added crew container
                     const reviewsContainer = document.getElementById('reviews');
                     const trailerContainer = document.getElementById('trailer');
                     const whereToWatchContainer = document.getElementById('whereToWatch');
                     
-                    poster.innerHTML = `<img src="https://image.tmdb.org/t/p/w500/${data.poster_path}" alt="${data.title}">`;
+                    poster.innerHTML = `<img src="https://image.tmdb.org/t/p/w500/${data.poster_path}" alt="${data.name}">`;
                     info.innerHTML = `
-                        <h2>${data.title}</h2>
-                        <p>Release Date: ${data.release_date}</p>
+                        <h2>${data.name}</h2>
+                        <p>First Air Date: ${data.first_air_date}</p>
+                        <p>Last Air Date: ${data.last_air_date}</p>
                         <p>Rating: ${data.vote_average}</p>
                         <p>${data.overview}</p>
                     `;
 
                     // Fetch cast details
-                    fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${apiKey}&language=en-US`)
+                    fetch(`https://api.themoviedb.org/3/tv/${tvShowId}/credits?api_key=${apiKey}&language=en-US`)
                     .then(response => response.json())
                     .then(creditsData => {
                         const cast = creditsData.cast.slice(0, 15); // Limit to top 15 cast members
-                        const castHTML = cast.map(member => `<li onclick="redirectToActor(${member.id})"><img src="https://image.tmdb.org/t/p/w500/${member.profile_path}" alt="${member.name}"><br>${member.name} (${member.character})</li>`).join('');
+                        const castHTML = cast.map(member => `<li><img src="https://image.tmdb.org/t/p/w500/${member.profile_path}" alt="${member.name}"><br>${member.name} (${member.character})</li>`).join('');
                         castContainer.innerHTML = `<h3>Cast</h3><ul>${castHTML}</ul>`;
                     })
                     .catch(error => console.error('Error fetching cast details:', error));
 
-                    // Fetch crew details (Directors, DOP, etc.)
-                    fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${apiKey}&language=en-US`)
-                        .then(response => response.json())
-                        .then(creditsData => {
-                            const crew = creditsData.crew.filter(member => member.job === 'Director' || member.department === 'Directing' || member.job === 'Director of Photography').slice(0, 5); // Limit to top 5 crew members
-                            const crewHTML = crew.map(member => `<li onclick="redirectToDirector(${member.id})"><img src="https://image.tmdb.org/t/p/w500/${member.profile_path}" alt="${member.name}"><br>${member.name} (${member.job})</li>`).join('');
-                            crewContainer.innerHTML = `<h3>Crew</h3><ul>${crewHTML}</ul>`;
-                        })
-                        .catch(error => console.error('Error fetching crew details:', error));
-                
-                    fetch(`https://api.themoviedb.org/3/movie/${movieId}/reviews?api_key=${apiKey}&language=en-US`)
+                    fetch(`https://api.themoviedb.org/3/tv/${tvShowId}/reviews?api_key=${apiKey}&language=en-US`)
     .then(response => response.json())
     .then(reviewsData => {
         const reviews = reviewsData.results.slice(0, 5); // Get top 5 reviews
@@ -289,7 +250,7 @@ session_start();
     .catch(error => console.error('Error fetching reviews:', error));
 
                     // Fetch trailer
-                    fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${apiKey}&language=en-US`)
+                    fetch(`https://api.themoviedb.org/3/tv/${tvShowId}/videos?api_key=${apiKey}&language=en-US`)
                         .then(response => response.json())
                         .then(videosData => {
                             const trailer = videosData.results.find(video => video.type === 'Trailer' && video.site === 'YouTube');
@@ -300,7 +261,7 @@ session_start();
                         .catch(error => console.error('Error fetching trailer:', error));
 
                     // Fetch where to watch
-                    fetch(`https://api.themoviedb.org/3/movie/${movieId}/watch/providers?api_key=${apiKey}`)
+                    fetch(`https://api.themoviedb.org/3/tv/${tvShowId}/watch/providers?api_key=${apiKey}`)
                         .then(response => response.json())
                         .then(providersData => {
                             const usProviders = providersData.results.US;
@@ -321,9 +282,9 @@ session_start();
                 .catch(err => console.error(err));
 
             document.getElementById('addToWatchlist').addEventListener('click', () => {
-                if (movie) {
+                if (tvShow) {
                     const watchlist = JSON.parse(localStorage.getItem('watchlist')) || [];
-                    watchlist.push(movieId);
+                    watchlist.push(tvShowId);
                     localStorage.setItem('watchlist', JSON.stringify(watchlist));
                     window.location.href = 'watchlist.php';
                 }
@@ -333,14 +294,6 @@ session_start();
                 window.location.href = 'login.html';
             });
         });
-
-        function redirectToActor(actorId) {
-            window.location.href = `actor.php?id=${actorId}`;
-        }
-
-        function redirectToDirector(directorId) {
-            window.location.href = `director.php?id=${directorId}`;
-        }
     </script>
 </body>
 </html>

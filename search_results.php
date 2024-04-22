@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,17 +11,17 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="./images/batmovies.png">
     <style>
-        .movie {
+        .media {
             display: inline-block;
             margin-right: 20px;
             vertical-align: top;
             text-align: center;
         }
-        .movie img {
+        .media img {
             max-width: 150px;
             height: auto;
         }
-        .movie p {
+        .media p {
             color: white;
             margin-top: 5px;
         }
@@ -35,6 +38,16 @@
             color: white; /* Set link color to white */
             text-decoration: none; /* Remove underline */
         }
+        #filterBtn {
+            margin-top: 20px;
+        }
+        .filter-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .filter-container button {
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -47,7 +60,6 @@
             </div>
             <?php
 
-    session_start();
     if(isset($_SESSION['username'])){
         echo '<div class="sign"><a href="logout.php">Logout</a></div>';
         $username = $_SESSION['username'];
@@ -62,6 +74,12 @@
 
         <div class="search-results">
             <h1>Search Results</h1>
+            <div class="filter-container">
+                <button id="filterMoviesBtn">Movies</button>
+                <button id="filterTVShowsBtn">TV Shows</button>
+                <button id="filterDirectorsBtn">Directors</button>
+                <button id="filterActorsBtn">Actors</button>
+            </div>
             <div id="resultsContainer">
                 <!-- Results will be displayed here -->
             </div>
@@ -83,7 +101,7 @@
 
             function fetchSearchResults(query) {
                 const apiKey = '77555ae36bb8bc2ae287fceee7f78c1c'; // Replace 'YOUR_API_KEY' with your TMDB API key
-                const apiUrl = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
+                const apiUrl = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
             
                 fetch(apiUrl)
                     .then(response => response.json())
@@ -91,28 +109,74 @@
                         const resultsContainer = document.getElementById('resultsContainer');
                         resultsContainer.innerHTML = ''; // Clear previous results
             
-                        data.results.forEach(movie => {
-                            const movieElement = document.createElement('div');
-                            movieElement.classList.add('movie');
-                            movieElement.innerHTML = `
-                                <a href="movie.php?id=${movie.id}">
-                                    <img src="https://image.tmdb.org/t/p/w500/${movie.poster_path}" alt="${movie.title}">
-                                    <p>${movie.title}</p>
-                                    <p>Release Date: ${movie.release_date}</p>
-                                </a>
+                        data.results.forEach(item => {
+                            let mediaType, title, category, posterPath, releaseDate, link;
+                            if (item.media_type === 'movie' || item.media_type === 'tv') {
+                                mediaType = item.media_type === 'movie' ? 'movie' : 'tv-show';
+                                title = item.media_type === 'movie' ? item.title : item.name;
+                                posterPath = item.poster_path ? `https://image.tmdb.org/t/p/w500/${item.poster_path}` : './images/default_poster.jpg';
+                                releaseDate = item.media_type === 'movie' ? item.release_date : item.first_air_date;
+                                category = item.media_type === 'movie' ? 'Movie' : 'TV Show';
+                                link = `href="${mediaType}.php?id=${item.id}"`;
+                            } else if (item.media_type === 'person' && item.known_for_department === 'Directing') {
+                                mediaType = 'director';
+                                title = item.name;
+                                posterPath = item.profile_path ? `https://image.tmdb.org/t/p/w500/${item.profile_path}` : './images/default_profile.jpg';
+                                category = 'Director';
+                                link = `href="${mediaType}.php?id=${item.id}"`;
+                            } else if (item.media_type === 'person' && item.known_for_department === 'Acting') {
+                                mediaType = 'actor';
+                                title = item.name;
+                                posterPath = item.profile_path ? `https://image.tmdb.org/t/p/w500/${item.profile_path}` : './images/default_profile.jpg';
+                                category = 'Actor';
+                                link = `href="${mediaType}.php?id=${item.id}"`;
+                            } else {
+                                return; // Skip if not a movie, tv show, director, or actor
+                            }
+                            const html = `
+                                <div class="media">
+                                    <a ${link}>
+                                        <img src="${posterPath}" alt="${title}">
+                                        <p>${title}</p>
+                                        <p>${category}</p>
+                                        ${releaseDate ? `<p>Release Date: ${releaseDate}</p>` : ''}
+                                    </a>
+                                </div>
                             `;
-                            resultsContainer.appendChild(movieElement);
+                            resultsContainer.innerHTML += html;
                         });
                     })
                     .catch(error => console.error('Error fetching search results:', error));
             }
             
+            document.getElementById('filterMoviesBtn').addEventListener('click', () => {
+                filterResults('movie');
+            });
+
+            document.getElementById('filterTVShowsBtn').addEventListener('click', () => {
+                filterResults('tv-show');
+            });
+
+            document.getElementById('filterDirectorsBtn').addEventListener('click', () => {
+                filterResults('director');
+            });
+
+            document.getElementById('filterActorsBtn').addEventListener('click', () => {
+                filterResults('actor');
+            });
+
+            function filterResults(filter) {
+                const query = document.getElementById('searchInput').value.trim();
+                if (query) {
+                    fetchSearchResults(`${query}&type=${filter}`);
+                }
+            }
 
             document.getElementById('searchButton').addEventListener('click', function(event) {
                 event.preventDefault();
                 const query = document.getElementById('searchInput').value.trim();
                 if (query) {
-                    window.location.href = `search_results.php?query=${encodeURIComponent(query)}`;
+                    fetchSearchResults(query);
                 }
             });
 
@@ -121,7 +185,7 @@
                     event.preventDefault();
                     const query = document.getElementById('searchInput').value.trim();
                     if (query) {
-                        window.location.href = `search_results.php?query=${encodeURIComponent(query)}`;
+                        fetchSearchResults(query);
                     }
                 }
             });
@@ -133,3 +197,4 @@
     </script>
 </body>
 </html>
+
