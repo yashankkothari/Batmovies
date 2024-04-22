@@ -41,19 +41,28 @@
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <!-- Header content, if any -->
-        </header>
-
+    <div class="prime">
         <nav class="navbar">
-            <a href="Home.php"><img class="logo" src="./images/batmovies.png"></a>
+        <a href="Home.php"><img class="logo" src="./images/batmovies.png"></a>
             <div class="search">
                 <input id="searchInput" type="text" placeholder="Search Batmovies">
                 <button id="searchButton" type="submit"><img src="./images/search.svg"></button>
             </div>
-            <div class="sign">Sign In</div>
-            <div class="sign"><a href="watchlist.html">Your Watchlist</a></div>
+            
+<?php
+    session_start();
+    if(isset($_SESSION['username']))
+    {
+        echo '<div class="sign"><a href="logout.php">Logout</a></div>';
+        $username = $_SESSION['username'];
+        echo "<div class='sign'><a href='user.php'>$username</a></div>"; // Modified link
+    } 
+    else 
+    {
+        echo '<div class="sign"><a href="login.html">Sign in</a></div>';
+    }
+    ?>
+            <div class="sign"><a href="watchlist.php">Your Watchlist</a></div>
         </nav>
 
         <div class="watchlist">
@@ -95,12 +104,12 @@
                         <table class="movie-table">
                         <tr>
                             <td class="movie-poster-cell">
-                                <a href="movie.html?id=${movieID}" class="movie-link">
+                                <a href="movie.php?id=${movieID}" class="movie-link">
                                     <img src="https://image.tmdb.org/t/p/w300${posterPath}" alt="${movieTitle}" class="movie-poster">
                                 </a>
                             </td>
                             <td class="movie-details-cell">
-                                <a href="movie.html?id=${movieID}" class="movie-link">
+                                <a href="movie.php?id=${movieID}" class="movie-link">
                                     <h2 class="movie-title">${movieTitle}</h2>
                                     <p class="movie-release-date">${releaseDate}</p>
                                 </a>
@@ -124,7 +133,7 @@
                 event.preventDefault();
                 const query = document.getElementById('searchInput').value.trim();
                 if (query) {
-                    window.location.href = `search_results.html?query=${encodeURIComponent(query)}`;
+                    window.location.href = `search_results.php?query=${encodeURIComponent(query)}`;
                 }
             });
 
@@ -134,7 +143,7 @@
                     event.preventDefault();
                     const query = document.getElementById('searchInput').value.trim();
                     if (query) {
-                        window.location.href = `search_results.html?query=${encodeURIComponent(query)}`;
+                        window.location.href = `search_results.php?query=${encodeURIComponent(query)}`;
                     }
                 }
             });

@@ -38,19 +38,26 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <!-- Header content, if any -->
-        </header>
-
+<div class="prime">
         <nav class="navbar">
-            <a href="Home.php"><img class="logo" src="./images/batmovies.png"></a>
+        <a href="Home.php"><img class="logo" src="./images/batmovies.png"></a>
             <div class="search">
                 <input id="searchInput" type="text" placeholder="Search Batmovies">
                 <button id="searchButton" type="submit"><img src="./images/search.svg"></button>
             </div>
-            <div class="sign">Sign In</div>
-            <div class="sign">Your Watchlist</div>
+            <?php
+
+    session_start();
+    if(isset($_SESSION['username'])){
+        echo '<div class="sign"><a href="logout.php">Logout</a></div>';
+        $username = $_SESSION['username'];
+        echo "<div class='sign'><a href='user.php'>$username</a></div>"; // Modified link
+    } else {
+        echo '<div class="sign"><a href="login.html">Sign in</a></div>';
+    }
+
+    ?>
+            <div class="sign"><a href="watchlist.php">Your Watchlist</a></div>
         </nav>
 
         <div class="search-results">
@@ -88,7 +95,7 @@
                             const movieElement = document.createElement('div');
                             movieElement.classList.add('movie');
                             movieElement.innerHTML = `
-                                <a href="movie.html?id=${movie.id}">
+                                <a href="movie.php?id=${movie.id}">
                                     <img src="https://image.tmdb.org/t/p/w500/${movie.poster_path}" alt="${movie.title}">
                                     <p>${movie.title}</p>
                                     <p>Release Date: ${movie.release_date}</p>
@@ -105,7 +112,7 @@
                 event.preventDefault();
                 const query = document.getElementById('searchInput').value.trim();
                 if (query) {
-                    window.location.href = `search_results.html?query=${encodeURIComponent(query)}`;
+                    window.location.href = `search_results.php?query=${encodeURIComponent(query)}`;
                 }
             });
 
@@ -114,7 +121,7 @@
                     event.preventDefault();
                     const query = document.getElementById('searchInput').value.trim();
                     if (query) {
-                        window.location.href = `search_results.html?query=${encodeURIComponent(query)}`;
+                        window.location.href = `search_results.php?query=${encodeURIComponent(query)}`;
                     }
                 }
             });

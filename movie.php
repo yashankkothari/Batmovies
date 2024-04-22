@@ -128,26 +128,26 @@
     </style>
 </head>
 <body>
-    <div class="prime">
+<div class="prime">
         <nav class="navbar">
-            <!-- Wrapped the logo in an anchor tag -->
-            <a href="Home.php"><img class="logo" src="./images/batmovies.png" alt="Batmovies Logo"></a>
-            <div class="menu">
-                <img class="menu_icon" src="./images/menu.svg">Menu
-            </div>
+        <a href="Home.php"><img class="logo" src="./images/batmovies.png"></a>
             <div class="search">
-                <input type="text" placeholder="Search Batmovies">
-                <button type="submit"><img src="./images/search.svg"></button>
+                <input id="searchInput" type="text" placeholder="Search Batmovies">
+                <button id="searchButton" type="submit"><img src="./images/search.svg"></button>
             </div>
             <?php
-                session_start();
-                if (isset($_SESSION['username'])) {
-                    echo "<div class='user'>" . $_SESSION['username'] . "</div>";
-                } else {
-                    echo "<div class='sign'>Sign In</div>";
-                }
-            ?>
-            <div class="sign"><a href="watchlist.html" id="watchlistLink">Your Watchlist</a></div>
+
+    session_start();
+    if(isset($_SESSION['username'])){
+        echo '<div class="sign"><a href="logout.php">Logout</a></div>';
+        $username = $_SESSION['username'];
+        echo "<div class='sign'><a href='user.php'>$username</a></div>"; // Modified link
+    } else {
+        echo '<div class="sign"><a href="login.html">Sign in</a></div>';
+    }
+
+    ?>
+            <div class="sign"><a href="watchlist.php">Your Watchlist</a></div>
         </nav>
 
         <div class="movie-details">
@@ -210,15 +210,30 @@
                     .catch(error => console.error('Error fetching cast details:', error));
                 
 
-                    // Fetch reviews
                     fetch(`https://api.themoviedb.org/3/movie/${movieId}/reviews?api_key=${apiKey}&language=en-US`)
-                        .then(response => response.json())
-                        .then(reviewsData => {
-                            const reviews = reviewsData.results;
-                            const reviewsHTML = reviews.map(review => `<li><strong>${review.author}</strong>: ${review.content}</li>`).join('');
-                            reviewsContainer.innerHTML = `<h3>Reviews</h3><ul>${reviewsHTML}</ul>`;
-                        })
-                        .catch(error => console.error('Error fetching reviews:', error));
+    .then(response => response.json())
+    .then(reviewsData => {
+        const reviews = reviewsData.results.slice(0, 5); // Get top 5 reviews
+        const reviewsHTML = reviews.map(review => {
+            // Truncate review content to two lines
+            const truncatedContent = review.content.split('\n').slice(0, 2).join('\n');
+            const moreButton = review.content.split('\n').length > 2 ? `<a href="#" class="read-more">Read more</a>` : '';
+            return `<li><strong>${review.author}</strong>: ${truncatedContent}${moreButton}</li>`;
+        }).join('');
+        reviewsContainer.innerHTML = `<h3>Reviews</h3><ul>${reviewsHTML}</ul>`;
+
+        // Add event listeners for "Read more" buttons
+        const readMoreButtons = document.querySelectorAll('.read-more');
+        readMoreButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                const li = button.parentElement;
+                const fullContent = li.textContent.split(': ')[1];
+                li.innerHTML = `<strong>${reviews.author}</strong>: ${fullContent}`;
+            });
+        });
+    })
+    .catch(error => console.error('Error fetching reviews:', error));
 
                     // Fetch trailer
                     fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${apiKey}&language=en-US`)
@@ -257,7 +272,7 @@
                     const watchlist = JSON.parse(localStorage.getItem('watchlist')) || [];
                     watchlist.push(movieId);
                     localStorage.setItem('watchlist', JSON.stringify(watchlist));
-                    window.location.href = 'watchlist.html';
+                    window.location.href = 'watchlist.php';
                 }
             });
 

@@ -176,7 +176,7 @@ body {
 <body>
     <div class="prime">
         <nav class="navbar">
-            <img class="logo" src="./images/batmovies.png">
+        <a href="Home.php"><img class="logo" src="./images/batmovies.png"></a>
             <div class="search">
                 <input id="searchInput" type="text" placeholder="Search Batmovies">
                 <button id="searchButton" type="submit"><img src="./images/search.svg"></button>
