@@ -13,7 +13,7 @@
         }
 
         .navbar {
-            background-color: rgba(0, 0, 0, 0.9); /* Semi-transparent black background */
+            background-color: rgba(0, 0, 0, 0.9); 
             padding: 10px 20px;
             display: flex;
             justify-content: space-between;
@@ -31,13 +31,13 @@
         }
 
         #login-container {
-            background-color: rgba(2, 0, 0, 0.9); /* Semi-transparent white background */
+            background-color: rgba(2, 0, 0, 0.9); 
             width: 300px;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            margin: 50px auto; /* Center the login container */
+            margin: 50px auto; 
         }
 
         h1 {
@@ -86,9 +86,9 @@
     <div class="navbar">
         <img class="logo" src="images/batmovies.png" alt="Bat Logo">
         <div class="menu">
-            <a href="Home.html">Home</a>
-            <a href="#">Movies</a>
-            <a href="#">TV Shows</a>
+            <a href="Home.php">Home</a>
+<!--            <a href="#">Movies</a>
+            <a href="#">TV Shows</a>-->
         </div>
         <div class="login">
             <a href="#">Sign up</a>
@@ -112,13 +112,13 @@
 
     <script>
         document.getElementById('signupLink').addEventListener('click', function(event) {
-            event.preventDefault(); // Prevent the default action of the link
+            event.preventDefault(); 
             window.location.href = 'SignUp.html'; // Redirect to SignUp.html
         });
 
         document.querySelector('.navbar a[href="Home.html"]').addEventListener('click', function(event) {
-            event.preventDefault(); // Prevent the default action of the link
-            window.location.href = 'Home.html'; // Redirect to Home.html
+            event.preventDefault(); 
+            window.location.href = 'Home.php'; // Redirect to Home.html
         });
     </script>
 

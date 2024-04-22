@@ -7,9 +7,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get form data
     $username = $_POST['username'];
     $email = $_POST['email'];
-    $password = $_POST['password']; // Note: Password should be hashed for security
+    $password = $_POST['password']; 
 
-    // Perform validation (e.g., check if fields are not empty)
+    // Perform validation (e.g., check if fields are not empty) (TO-do)
 
     // Check if username or email already exists
     $checkQuery = "SELECT * FROM usersall WHERE Username='$username' OR Email='$email'";

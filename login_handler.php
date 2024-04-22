@@ -1,7 +1,6 @@
 <?php
 session_start(); // Start session
 
-// Include database connection file
 include 'db_connection.php';
 
 // Get form data
@@ -15,7 +14,7 @@ $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     // User found, login successful
     $_SESSION['username'] = $username; // Store username in session
-    header("Location: Home.html"); // Redirect to dashboard or profile page
+    header("Location: Home.php"); // Redirect to dashboard or profile page
     exit();
 } else {
     // Login failed, redirect back to login page with error message

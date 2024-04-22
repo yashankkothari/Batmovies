@@ -47,7 +47,18 @@
                 <input id="searchInput" type="text" placeholder="Search Batmovies">
                 <button id="searchButton" type="submit"><img src="./images/search.svg"></button>
             </div>
-            <div class="sign">Sign In</div>
+            <?php
+
+    session_start();
+    if(isset($_SESSION['username'])){
+        echo '<div class="sign"><a href="logout.php">Logout</a></div>';
+        $username = $_SESSION['username'];
+        echo "<div class='sign'><a href='user.php'>$username</a></div>"; // Modified link
+    } else {
+        echo '<div class="sign"><a href="login.html">Sign in</a></div>';
+    }
+
+    ?>
             <div class="sign"><a href="watchlist.html">Your Watchlist</a></div>
         </nav>
 
@@ -93,7 +104,9 @@
                                 <img src="https://image.tmdb.org/t/p/w500/${movie.poster_path}" alt="${movie.title}">
                                 <div class="details">
                                     <h3>${movie.title}</h3>
+                                    <p>Rating: ${data.vote_average}</p>
                                     <p>Release Date: ${movie.release_date}</p>
+
                                 </div>
                             </a>
                         `;
