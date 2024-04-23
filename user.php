@@ -141,36 +141,41 @@ body {
 .user-profile label {
     display: block;
     margin-bottom: 10px;
+    width: 100px;
 }
 .user-profile input[type="file"] {
     width: 200px;
     margin-bottom: 10px;
+    padding: 0px 8px;
 }
 .user-profile button {
-    padding: 10px 20px;
+    padding: 5px 50px;
     margin-top: 10px;
     background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    width: 220px;
 }
 .user-profile button:hover {
     background-color: #0056b3;
 }
 .user-profile form .remove-profile-btn {
     width: auto; 
-    padding: 10px 20px; 
+    padding: 23px 40px; 
     background-color: #dc3545; 
     color: white; 
     border: none; 
     border-radius: 5px; 
     cursor: pointer; 
-    margin-top: 10px; 
+    margin-top: -30px; 
+    height: 60px;
 }
 .user-profile form .remove-profile-btn:hover {
     background-color: #c82333;
 }
+
     </style>
 </head>
 <body>
