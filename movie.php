@@ -1,6 +1,27 @@
 <?php
 session_start();
+require_once "db_connection.php";
+
+// Check if the form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_SESSION['username']) && isset($_POST['rating'])) {
+
+        $movieTitle = $_POST['movie_title'];
+        $username = $_SESSION['username'];
+        $rating = $_POST['rating'];
+        
+        // Insert review into database
+        $insertReviewQuery = "INSERT INTO movie_reviews (movie_title, username, rating) VALUES ('$movieTitle', '$username', '$rating')";
+        if (mysqli_query($conn, $insertReviewQuery)) {
+            echo "Review submitted successfully.";
+        } else {
+            echo "Error: " . $insertReviewQuery . "<br>" . mysqli_error($conn);
+        }
+    }
+}
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -165,6 +186,18 @@ session_start();
         }
         .providers li img {
             max-height: 40px;
+            cursor: pointer; /* Add cursor pointer */
+        }
+        .add-to-watchlist {
+            background-color: #FF0000;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
         }
     </style>
 </head>
@@ -193,22 +226,22 @@ session_start();
         </nav>
 
         <div class="movie-details">
-            <div class="poster" id="poster"></div>
-            <div class="info" id="info"></div>
-            <div class="trailer" id="trailer"></div>
-            <div id="cast"></div>
-            <div id="crew"></div> <!-- Added crew section -->
-            <div id="reviews"></div>
-            <div class="where-to-watch" id="whereToWatch"></div>
-            <div class="rating" id="rating">
-                <input type="radio" id="star5" name="rating" value="5"><label for="star5"></label>
-                <input type="radio" id="star4" name="rating" value="4"><label for="star4"></label>
-                <input type="radio" id="star3" name="rating" value="3"><label for="star3"></label>
-                <input type="radio" id="star2" name="rating" value="2"><label for="star2"></label>
-                <input type="radio" id="star1" name="rating" value="1"><label for="star1"></label>
-            </div>
-            <button id="addToWatchlist" href="add_to_watchlist.php">Add to Watchlist</button>
-        </div>
+    <div class="poster" id="poster"></div>
+    <div class="info" id="info"></div>
+    <div class="trailer" id="trailer"></div>
+    <div id="cast"></div>
+    <div id="crew"></div> <!-- Added crew section -->
+    <center> <div id="reviews"></div> </center> 
+    <center> <div class="where-to-watch" id="whereToWatch"></div></center> 
+    <div class="rating" id="rating">
+        <form method="post" action="">
+            <input type="hidden" id="movie_title" name="movie_title">
+            <input type="number" id="ratingInput" name="rating" min="1" max="10">
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    <a id="addToWatchlist" class="add-to-watchlist" href="watchlist.php">Add to Watchlist</a>
+</div>
 
         <footer>
             <!-- Footer content -->
@@ -234,6 +267,7 @@ session_start();
                     const reviewsContainer = document.getElementById('reviews');
                     const trailerContainer = document.getElementById('trailer');
                     const whereToWatchContainer = document.getElementById('whereToWatch');
+                    const movieTitleTag = document.getElementById('movie_title')
                     
                     poster.innerHTML = `<img src="https://image.tmdb.org/t/p/w500/${data.poster_path}" alt="${data.title}">`;
                     info.innerHTML = `
@@ -242,6 +276,7 @@ session_start();
                         <p>Rating: ${data.vote_average}</p>
                         <p>${data.overview}</p>
                     `;
+                    movieTitleTag.value = data.title 
 
                     // Fetch cast details
                     fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${apiKey}&language=en-US`)
@@ -307,7 +342,7 @@ session_start();
                             if (usProviders) {
                                 const streaming = usProviders.flatrate;
                                 if (streaming && streaming.length > 0) {
-                                    const providersHTML = streaming.map(provider => `<li><img src="https://image.tmdb.org/t/p/original/${provider.logo_path}" alt="${provider.provider_name}"></li>`).join('');
+                                    const providersHTML = streaming.map(provider => `<li><img src="https://image.tmdb.org/t/p/original/${provider.logo_path}" alt="${provider.provider_name}" onclick="redirectToProvider('${provider.link}')"></li>`).join('');
                                     whereToWatchContainer.innerHTML = `<h3>Where to Watch</h3><ul class="providers">${providersHTML}</ul>`;
                                 } else {
                                     whereToWatchContainer.innerHTML = `<h3>Where to Watch</h3><p>Not available for streaming.</p>`;
@@ -340,6 +375,12 @@ session_start();
 
         function redirectToDirector(directorId) {
             window.location.href = `director.php?id=${directorId}`;
+        }
+
+        function redirectToProvider(link) {
+            if (link) {
+                window.open(link, '_blank');
+            }
         }
     </script>
 </body>

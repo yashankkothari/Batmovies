@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once "db_connection.php";
 
 function removeImage($imagePath) {
     unlink($imagePath); 
@@ -76,6 +77,18 @@ function openAndReadFile($filePath) {
     return false;
 }
 
+// Fetch user's reviews from the database
+if (isset($_SESSION['username'])) {
+    $username = $_SESSION['username'];
+    $userReviewsQuery = "SELECT * FROM movie_reviews WHERE username='$username'";
+    $result = mysqli_query($conn, $userReviewsQuery);
+    $reviews = [];
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $reviews[] = $row;
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -120,8 +133,18 @@ body {
     color: white;
 }
 .user-profile {
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
     margin-top: 50px;
+    padding: 0 20px;
+}
+.user-profile .left {
+    width: 40%;
+    text-align: left;
+}
+.user-profile .right {
+    width: 55%;
+    text-align: left;
 }
 .user-profile h1 {
     font-size: 24px;
@@ -135,13 +158,13 @@ body {
 .user-profile form {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     margin-top: 20px;
 }
 .user-profile label {
     display: block;
     margin-bottom: 10px;
-    width: 100px;
+    width: 200px;
 }
 .user-profile input[type="file"] {
     width: 200px;
@@ -169,19 +192,28 @@ body {
     border: none; 
     border-radius: 5px; 
     cursor: pointer; 
-    margin-top: -30px; 
     height: 60px;
 }
 .user-profile form .remove-profile-btn:hover {
     background-color: #c82333;
 }
-
+.review {
+    padding: 20px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+.review h2 {
+    color: white;
+}
+.review p {
+    color: white;
+}
     </style>
 </head>
 <body>
     <div class="prime">
         <nav class="navbar">
-        <a href="Home.php"><img class="logo" src="./images/batmovies.png"></a>
+            <a href="Home.php"><img class="logo" src="./images/batmovies.png"></a>
             <div class="search">
                 <input id="searchInput" type="text" placeholder="Search Batmovies">
                 <button id="searchButton" type="submit"><img src="./images/search.svg"></button>
@@ -198,8 +230,9 @@ body {
             <div class="sign"><a href="watchlist.html">Your Watchlist</a></div>
         </nav>
         <div class="user-profile">
-            <?php
-                echo "<h1>Welcome, $username!</h1>";
+            <div class="left">
+                <h1>Welcome, <?php echo $username; ?>!</h1>
+                <?php
                 if (isset($_SESSION['profile_picture'])) {
                     $profilePicture = $_SESSION['profile_picture'];
                     echo "<img src='$profilePicture' alt='Profile Picture'>";
@@ -213,20 +246,29 @@ body {
                 } else {
                     echo "You don't have a profile picture.";
                 }
-            ?>
-            <form action="" method="post" enctype="multipart/form-data">
-                <label for="profilePicture">Upload Profile Picture:</label>
-                <input type="file" id="profilePicture" name="image" accept="image/*">
-                <button type="submit">Upload</button>
-            </form>
-            <?php
-                // Example usage of file functionalities
-                $testFilePath = "test.txt";
-                appendToFile($testFilePath, "Hello, world!\n");
-                $fileContent = openAndReadFile($testFilePath);
-                echo "<p>File Content: $fileContent</p>";
-                deleteFile($testFilePath);
-            ?>
+                ?>
+                <form action="" method="post" enctype="multipart/form-data">
+                    <label for="profilePicture">Upload Profile Picture:</label>
+                    <input type="file" id="profilePicture" name="image" accept="image/*">
+                    <button type="submit">Upload</button>
+                </form>
+            </div>
+            <div class="right">
+    <h2>Your Reviews:</h2>
+    <?php 
+    if (!empty($reviews)) {
+        foreach ($reviews as $review) {
+            echo "<div class='review'>";
+            echo "<h2>{$review['movie_title']}</h2>";
+            echo "<p>Rating: {$review['rating']}</p>"; // Modified this line
+            echo "</div>";
+        }
+    } else {
+        echo "<p>No reviews found.</p>";
+    }
+    ?>
+</div>
+            </div>
         </div>
     </div>
 </body>
