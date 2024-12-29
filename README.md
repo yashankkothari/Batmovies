@@ -1,2 +1,2 @@
 # Batmovies
-News App i created using python for my college mini project
+Movie Database App which was created for my web programming mini project
